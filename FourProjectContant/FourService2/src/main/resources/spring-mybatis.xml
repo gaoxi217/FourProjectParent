@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--引入数据库连接资源文件-->
+    <context:property-placeholder location="classpath:db.properties"/>
+
+    <!--配置连接池-->
+    <bean class="com.alibaba.druid.pool.DruidDataSource" id="ds">
+        <property name="username" value="${user}"/>
+        <property name="password" value="${pass}"/>
+        <property name="url" value="${url}"/>
+        <property name="driverClassName" value="${driver}"/>
+        <property name="maxActive" value="${maxActive}"/>
+    </bean>
+
+    <!--配置spring核心类sqlsessionfactorybean-->
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sf">
+        <!--配置别名包pojo-->
+        <property name="typeAliasesPackage" value="com"/>
+        <!--配置mapper文件的扫描-->
+        <property name="mapperLocations" value="classpath:"/>
+        <!--关联连接池-->
+        <property name="dataSource" ref="ds"/>
+        <!--管理mybatis的核心文件-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+    </bean>
+
+    <!--mapper文件引入-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--配置文件mapper的包名-->
+        <property name="basePackage" value=""/>
+        <property name="sqlSessionFactoryBeanName" value="sf"/>
+    </bean>
+
+    <bean class="org.springframework.jdbc.datasource.DataSourceTransactionManager" id="dtx">
+        <property name="dataSource" ref="ds"></property>
+    </bean>
+
+    <tx:advice id="tx" transaction-manager="dtx">
+        <!--定义属性，声明事务规则 -->
+        <tx:attributes>
+            <tx:method name="create*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="insert*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="add*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="upd*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="del*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="execute*" propagation="REQUIRED"
+                       isolation="DEFAULT" rollback-for="Exception" />
+            <tx:method name="do*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="save*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="set*" propagation="REQUIRED" isolation="DEFAULT"
+                       rollback-for="Exception" />
+            <tx:method name="get*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="show*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="list*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="select*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="query*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="has*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+            <tx:method name="ntx*" propagation="NOT_SUPPORTED" />
+            <tx:method name="*" propagation="SUPPORTS" isolation="DEFAULT"
+                       read-only="true" />
+        </tx:attributes>
+    </tx:advice>
+
+   <!-- <aop:config>
+        <aop:pointcut expression="execution(* com.qphone.service.*.*(..))" id="mpc"/>
+        <aop:advisor advice-ref="tx" pointcut-ref="mpc"/>
+    </aop:config>-->
+</beans>

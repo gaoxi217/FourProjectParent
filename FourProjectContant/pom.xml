@@ -12,7 +12,7 @@
     <artifactId>FourProjectContant</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>FourService</module>
+        <module>FourService2</module>
         <module>FourInterface</module>
     </modules>
 
